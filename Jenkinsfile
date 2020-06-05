@@ -73,20 +73,20 @@ pipeline {
             }
         }
         
-        stage('Stage') {
-            steps {
-                script {
-                    if (gitBranch == 'master' || gitBranch == 'develop'){
+        // stage('Stage') {
+        //     steps {
+        //         script {
+        //             if (gitBranch == 'master' || gitBranch == 'develop'){
                         
-                        sh "docker stop java-spring-app || true"
-                        sh "docker rm java-spring-app || true"
-                        sh "docker run -d -p 8080:8080 --name java-spring-app ${customLocalImage}"
-                    } else if (gitBranch.contains('feature')) {
-                        echo "It is a feature branch"
-                    }
-                }
-            }
-        }
+        //                 sh "docker stop java-spring-app || true"
+        //                 sh "docker rm java-spring-app || true"
+        //                 sh "docker run -d -p 8080:8080 --name java-spring-app ${customLocalImage}"
+        //             } else if (gitBranch.contains('feature')) {
+        //                 echo "It is a feature branch"
+        //             }
+        //         }
+        //     }
+        // }
 
         // stage('Deploy') {
         //     steps {
@@ -115,18 +115,18 @@ pipeline {
         //     }
         // }
 
-        stage('Clean') {
-            steps {
-                script {
-                    if (gitBranch == 'master' || gitBranch == 'develop'){
-                        sh "docker rmi ${customLocalImage} || true"
-                        sh "docker system prune -f || true"
-                    } else if (gitBranch.contains('feature')) {
-                        echo "It is a feature branch"
-                    }
-                }
-            }
-        }
+        // stage('Clean') {
+        //     steps {
+        //         script {
+        //             if (gitBranch == 'master' || gitBranch == 'develop'){
+        //                 sh "docker rmi ${customLocalImage} || true"
+        //                 sh "docker system prune -f || true"
+        //             } else if (gitBranch.contains('feature')) {
+        //                 echo "It is a feature branch"
+        //             }
+        //         }
+        //     }
+        // }
 
     }
 }
