@@ -31,6 +31,8 @@ pipeline {
             steps {
                 script {
                     if (gitBranch.contains('release') || gitBranch == 'master'){
+                        echo "HELLO"
+                        echo "${GIT_BRANCH}"
                         sh "docker rmi ${customLocalImage} || true"
                         sh "docker build -t ${customLocalImage} ."
                         sendSlackMessage "Build Successul"
