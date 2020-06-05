@@ -5,6 +5,8 @@ WORKDIR /usr/src/app
 
 COPY ./ ./
 
+RUN chmod +x gradlew
+
 RUN ./gradlew bootjar
 
 
