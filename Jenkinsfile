@@ -48,7 +48,9 @@ pipeline {
                         // sh "docker tag ${customLocalImage} ${dockerPublisherName}/${dockerRepoName}:${gitBranch}-0.0.${BUILD_NUMBER}"
                         // sh "docker tag ${customLocalImage} ${dockerPublisherName}/${dockerRepoName}:latest"
                         // sh "docker push ${dockerPublisherName}/${dockerRepoName}"
-
+                        
+                        sh 'printenv'
+                        ECS_REGISTRY = "${env.ECS_REGISTRY}"
                         ECR_REPO="simple-spring-app"
 
                         sh """
