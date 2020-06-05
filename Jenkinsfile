@@ -31,11 +31,12 @@ pipeline {
             steps {
                 script {
                     if (gitBranch.contains('release') || gitBranch == 'master'){
-                        echo "HELLO"
-                        echo "${GIT_BRANCH}"
+                        
                         sh "docker rmi ${customLocalImage} || true"
                         sh "docker build -t ${customLocalImage} ."
                         sendSlackMessage "Build Successul"
+                        echo "HELLO"
+                        echo "${GIT_BRANCH}"
                     } else if (gitBranch == 'qa' || gitBranch == 'develop') {
                         echo "It is a ${gitBranch} branch"
                     } else if (gitBranch.contains('feature')) {
