@@ -1,4 +1,4 @@
-// Define the variables.
+// Define the variables
 def dockerPublisherName = "rahulraju"
 def dockerRepoName = "simple-spring-app"
 
