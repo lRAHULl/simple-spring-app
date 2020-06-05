@@ -84,7 +84,6 @@ pipeline {
 
 void deployToECS() {
     sh '''
-
         dockerRepo=`aws ecr describe-repositories --repository-name jenkins-test-repo --region us-east-1 | grep repositoryUri | cut -d "\"" -f 4`
         sed -e "s;DOCKER_IMAGE_NAME;${dockerRepo}:latest;g" ${WORKSPACE}/template.json > taskDefinition.json
         aws ecs register-task-definition --family jenkins-test --cli-input-json file://taskDefinition.json --region us-east-1
