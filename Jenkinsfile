@@ -51,7 +51,7 @@ pipeline {
                         def buildTag = "build-${BUILD_NUMBER}"
 
                         sh "git tag ${buildTag}"
-                        sh "git push ${buildTag}"
+                        sh "git push ${GIT_URL} ${buildTag}"
 
                         // sh 'printenv'
                         def ECS_REGISTRY = env.ECS_REGISTRY
