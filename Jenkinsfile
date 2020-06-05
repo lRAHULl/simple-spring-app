@@ -35,7 +35,7 @@ pipeline {
                         sh "docker rmi ${customLocalImage} || true"
                         sh "docker build -t ${customLocalImage} ."
                         sendSlackMessage "Build Successul"
-                        sh "printenv"
+                        // sh "printenv"
                     } else if (gitBranch == 'qa' || gitBranch == 'develop') {
                         echo "It is a ${gitBranch} branch"
                     } else if (gitBranch.contains('feature')) {
