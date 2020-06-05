@@ -45,6 +45,21 @@ pipeline {
                             )
             }
         }
+
+        stage('Prod Deploy') {
+           steps {
+                git branch: "**", url: "${gitRepoName}"
+                sh """
+                    sed -e "s;DOCKER_IMAGE_NAME;${dockerImage};g" ${WORKSPACE}/template.json > taskDefinition.json
+                """
+                sh '''
+                    aws ecs register-task-definition --family simple-java-app --cli-input-json file://taskDefinition.json --region us-east-1
+                    revision=`aws ecs describe-task-definition --task-definition simple-java-app --region us-east-1 | grep "revision" | tr -s " " | cut -d " " -f 3`
+                    aws ecs update-service --cluster simple-java-cluster --service simple-java-service --task-definition simple-java-app:${revision} --desired-count 1
+
+                '''
+           }
+        }
         
         stage('Cleanup') {
             steps {
