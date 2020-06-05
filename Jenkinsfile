@@ -22,7 +22,6 @@ pipeline {
                 script {
                     gitBranch=getBranchName "${GIT_BRANCH}"
                 }
-                echo "GIT BRANCH ------------- ${GIT_BRANCH}"
                 echo "CHECKING OUT BRANCH   ------  ${gitBranch}"
             }
         }
@@ -94,6 +93,7 @@ void deployToECS() {
 }
 
 String getBranchName(String inputString) {
+    echo "INPUT ====> ${inputString}"
     return inputString.split("/")[1]
 }
 
