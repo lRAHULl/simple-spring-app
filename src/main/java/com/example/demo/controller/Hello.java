@@ -13,4 +13,9 @@ public class Hello {
         return "Hello from Java!";
     }
 
+    @GetMapping("/hi")
+    public String sayHi() {
+        return "Hi from Java!";
+    }
+
 }
