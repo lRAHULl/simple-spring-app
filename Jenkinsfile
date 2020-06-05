@@ -20,6 +20,7 @@ pipeline {
             steps {
                 git branch: "**", url: "${gitRepoName}"
                 script {
+                    sh 'printenv'
                     gitBranch=getBranchName "${GIT_BRANCH}"
                 }
                 echo "CHECKING OUT BRANCH   ------  ${gitBranch}"
@@ -53,7 +54,7 @@ pipeline {
                         sh "git tag ${buildTag}"
                         sh "git push ${gitUrl} ${buildTag}"
 
-                        // sh 'printenv'
+                        
                         def ECS_REGISTRY = env.ECS_REGISTRY
                         def ECR_REPO = env.SIMPLE_JAVA_ECR_REPO
 
