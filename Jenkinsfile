@@ -19,8 +19,8 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: "**", url: "${gitRepoName}"
+                sh 'printenv'
                 script {
-                    sh 'printenv'
                     gitBranch=getBranchName "${GIT_BRANCH}"
                 }
                 echo "CHECKING OUT BRANCH   ------  ${gitBranch}"
