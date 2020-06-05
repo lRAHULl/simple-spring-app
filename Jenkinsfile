@@ -49,7 +49,11 @@ pipeline {
                         // sh "docker tag ${customLocalImage} ${dockerPublisherName}/${dockerRepoName}:latest"
                         // sh "docker push ${dockerPublisherName}/${dockerRepoName}"
                         
-                        sh 'printenv'
+                        sh "git tag origin build-${BUILD_NUMBER}"
+                        sh "git push "
+
+                        // sh 'printenv'
+                        env.ECS_REGISTRY="572508813856.dkr.ecr.us-east-1.amazonaws.com"
                         ECR_REPO="simple-spring-app"
 
                         sh """
