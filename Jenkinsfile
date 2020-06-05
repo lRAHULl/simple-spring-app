@@ -30,12 +30,14 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    if (gitBranch == 'master' || gitBranch == 'develop'){
+                    if (gitBranch.contains('release') || gitBranch == 'master'){
                         sh "docker rmi ${customLocalImage} || true"
                         sh "docker build -t ${customLocalImage} ."
                         sendSlackMessage "Build Successul"
+                    } else if (gitBranch == 'qa' || gitBranch == 'develop') {
+                        echo "It is a ${gitBranch} branch"
                     } else if (gitBranch.contains('feature')) {
-                        echo "It is a feature branch"
+                        echo "It is a ${gitBranch} branch"
                     }
                 }
             }
@@ -44,10 +46,7 @@ pipeline {
         stage('Publish') {
             steps {
                 script {
-                    if (gitBranch == 'master' || gitBranch == 'develop'){
-                        // sh "docker tag ${customLocalImage} ${dockerPublisherName}/${dockerRepoName}:${gitBranch}-0.0.${BUILD_NUMBER}"
-                        // sh "docker tag ${customLocalImage} ${dockerPublisherName}/${dockerRepoName}:latest"
-                        // sh "docker push ${dockerPublisherName}/${dockerRepoName}"
+                    if (gitBranch.contains('release')){
                         def buildTag = "build-${BUILD_NUMBER}"
                         def gitUrl = "https://${env.GITHUB_USERNAME}:${env.GITHUB_PASSWORD}@github.com/lRAHULl/simple-spring-app.git"
 
@@ -66,75 +65,21 @@ pipeline {
                         """
 
                         sendSlackMessage "Publish Successul"
+                    } else if (gitBranch == 'master') {
+                        sh "docker tag ${customLocalImage} ${dockerPublisherName}/${dockerRepoName}:build-${BUILD_NUMBER}"
+                        sh "docker tag ${customLocalImage} ${dockerPublisherName}/${dockerRepoName}:latest"
+                        sh "docker push ${dockerPublisherName}/${dockerRepoName}"
+                    } else if (gitBranch == 'qa' || gitBranch == 'develop') {
+                        echo "It is a ${gitBranch} branch"
                     } else if (gitBranch.contains('feature')) {
-                        echo "It is a feature branch"
+                        echo "It is a ${gitBranch} branch"
                     }
                 }
             }
         }
-        
-        // stage('Stage') {
-        //     steps {
-        //         script {
-        //             if (gitBranch == 'master' || gitBranch == 'develop'){
-                        
-        //                 sh "docker stop java-spring-app || true"
-        //                 sh "docker rm java-spring-app || true"
-        //                 sh "docker run -d -p 8080:8080 --name java-spring-app ${customLocalImage}"
-        //             } else if (gitBranch.contains('feature')) {
-        //                 echo "It is a feature branch"
-        //             }
-        //         }
-        //     }
-        // }
-
-        // stage('Deploy') {
-        //     steps {
-
-        //         script {
-        //             if (gitBranch == 'master'){
-        //                 echo "Master "                        
-        //                 // sh 'bash ./aws-ecs-deploy.sh'
-
-        //                 sh """
-        //                     docker tag ${customLocalImage} ${ECS_REGISTRY}/${ECR_REPO}:build-${BUILD_NUMBER}
-        //                     docker tag ${customLocalImage} ${ECS_REGISTRY}/${ECR_REPO}:latest
-        //                     echo "${ECS_REGISTRY}/${ECR_REPO}"
-        //                     docker push ${ECS_REGISTRY}/${ECR_REPO}
-        //                 """
-        //                 // sh "docker stop lamp-web || true"
-        //                 // sh "docker rm lamp-web || true"
-        //                 // sh "docker stop lamp-mysql || true"
-        //                 // sh "docker rm lamp-mysql || true"
-                        
-        //                 // sh "docker-compose up -d"
-        //             } else if (gitBranch.contains('feature')) {
-        //                 echo "It is a feature branch"
-        //             }
-        //         }
-        //     }
-        // }
-
-        // stage('Clean') {
-        //     steps {
-        //         script {
-        //             if (gitBranch == 'master' || gitBranch == 'develop'){
-        //                 sh "docker rmi ${customLocalImage} || true"
-        //                 sh "docker system prune -f || true"
-        //             } else if (gitBranch.contains('feature')) {
-        //                 echo "It is a feature branch"
-        //             }
-        //         }
-        //     }
-        // }
-
     }
 }
 
-// void publishInECS(String customLocalImage) {
-//     // echo "${customLocalImage}"
-    
-// }
 
 void deployToECS() {
     sh '''

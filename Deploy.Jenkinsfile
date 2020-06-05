@@ -1,5 +1,10 @@
 def dockerImage = "${env.ECS_REGISTRY}/${env.SIMPLE_JAVA_ECR_REPO}:${params.imageTag}"
 
+def deploymentEnv = "http://34.224.5.40"
+def appPort = "8080"
+def devPort = "8080"
+def qaPort = "8085"
+def appName = "java-spring-app"
 properties([parameters([string(defaultValue: 'latest', description: 'Tag of the image to be built from simple-spring-app repository in ECR.', name: 'imageTag', trim: false)])])
 pipeline {
     agent {
@@ -11,14 +16,19 @@ pipeline {
     stages {
         stage('Dev Deploy') {
             steps {
-                sh "docker stop java-spring-app-dev || true"
-                sh "docker rm java-spring-app-dev || true"
-                sh "docker run -d -p 8080:8080 --name java-spring-app-dev ${dockerImage}"
+                localDeploy(appName: appName, 
+                            stage: 'dev',
+                            hostPort: devPort,
+                            containerPort: appPort,
+                            dockerImage: dockerImage
+                            )
             }
         }
         
-        stage('QA Approval') {
+        stage('DEV Approval') {
             steps {
+                sendSlackMessage "Check the Dev environment at ${deploymentEnv}:${devPort}/"
+                sendSlackMessage "GOTO: ${BUILD_URL}console to proceed the deployment to QA environment"
                 timeout(time: 1, unit: 'HOURS') {
                     input message: 'Proceed to Deploy to QA environment?', ok: 'Yes'
                 }
@@ -27,9 +37,12 @@ pipeline {
         
         stage('QA Deploy') {
             steps {
-                sh "docker stop java-spring-app-qa || true"
-                sh "docker rm java-spring-app-qa || true"
-                sh "docker run -d -p 8085:8080 --name java-spring-app-qa ${dockerImage}"
+                localDeploy(appName: appName, 
+                            stage: 'qa',
+                            hostPort: qaPort,
+                            containerPort: appPort,
+                            dockerImage: dockerImage
+                            )
             }
         }
         
@@ -39,4 +52,14 @@ pipeline {
             }
         }
     }
+}
+
+def localDeploy(Map args) {
+    sh "docker stop ${args.appName}-${args.stage} || true"
+    sh "docker rm ${args.appName}-${args.stage} || true"
+    sh "docker run -d -p ${args.hostPort}:${args.containerPort} --name ${args.appName}-${args.stage} ${args.dockerImage}"
+}
+
+void sendSlackMessage(String message) {
+    slackSend botUser: true, channel: 'private_s3_file_upload', failOnError: true, message: "${message}", teamDomain: 'codaacademy2020', tokenCredentialId: 'coda-academy-slack'
 }
