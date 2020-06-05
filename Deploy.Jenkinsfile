@@ -45,17 +45,26 @@ pipeline {
                             )
             }
         }
-
+        
+        stage('QA Approval') {
+            steps {
+                sendSlackMessage "Check the QA environment at ${deploymentEnv}:${qaPort}/"
+                sendSlackMessage "GOTO: ${BUILD_URL}console to proceed the deployment to Prod environment"
+                timeout(time: 1, unit: 'HOURS') {
+                    input message: 'Proceed to Deploy to QA environment?', ok: 'Yes'
+                }
+            }   
+        }
+        
         stage('Prod Deploy') {
            steps {
-                git branch: "**", url: "${gitRepoName}"
+                git branch: "**", url: "https://github.com/lRAHULl/simple-spring-app.git"
                 sh """
                     sed -e "s;DOCKER_IMAGE_NAME;${dockerImage};g" ${WORKSPACE}/template.json > taskDefinition.json
                 """
                 sh '''
                     aws ecs register-task-definition --family simple-java-app --cli-input-json file://taskDefinition.json --region us-east-1
-                    revision=`aws ecs describe-task-definition --task-definition simple-java-app --region us-east-1 | grep "revision" | tr -s " " | cut -d " " -f 3`
-                    aws ecs update-service --cluster simple-java-cluster --service simple-java-service --task-definition simple-java-app:${revision} --desired-count 1
+                    aws ecs update-service --cluster simple-java-cluster --service simple-java-service --task-definition simple-java-app --desired-count 1
 
                 '''
            }
