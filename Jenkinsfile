@@ -48,19 +48,20 @@ pipeline {
                         // sh "docker tag ${customLocalImage} ${dockerPublisherName}/${dockerRepoName}:${gitBranch}-0.0.${BUILD_NUMBER}"
                         // sh "docker tag ${customLocalImage} ${dockerPublisherName}/${dockerRepoName}:latest"
                         // sh "docker push ${dockerPublisherName}/${dockerRepoName}"
-                        
-                        sh "git tag origin build-${BUILD_NUMBER}"
+                        def buildTag = "build-${BUILD_NUMBER}"
+
+                        sh "git tag origin ${buildTag}"
                         sh "git push "
 
                         // sh 'printenv'
-                        env.ECS_REGISTRY="572508813856.dkr.ecr.us-east-1.amazonaws.com"
-                        ECR_REPO="simple-spring-app"
+                        def ECS_REGISTRY = env.ECS_REGISTRY
+                        def ECR_REPO = env.SIMPLE_JAVA_ECR_REPO
 
                         sh """
-                            docker tag ${customLocalImage} ${env.ECS_REGISTRY}/${ECR_REPO}:build-${BUILD_NUMBER}
-                            docker tag ${customLocalImage} ${env.ECS_REGISTRY}/${ECR_REPO}:latest
-                            echo "${env.ECS_REGISTRY}/${ECR_REPO}"
-                            docker push ${env.ECS_REGISTRY}/${ECR_REPO}
+                            docker tag ${customLocalImage} ${ECS_REGISTRY}/${ECR_REPO}:${buildTag}
+                            docker tag ${customLocalImage} ${ECS_REGISTRY}/${ECR_REPO}:latest
+                            echo "${ECS_REGISTRY}/${ECR_REPO}"
+                            docker push ${ECS_REGISTRY}/${ECR_REPO}
                         """
 
                         sendSlackMessage "Publish Successul"
@@ -93,16 +94,16 @@ pipeline {
         //             if (gitBranch == 'master'){
         //                 echo "Master "
 
-        //                 env.ECS_REGISTRY="572508813856.dkr.ecr.us-east-1.amazonaws.com"
+        //                 ECS_REGISTRY="572508813856.dkr.ecr.us-east-1.amazonaws.com"
         //                 ECR_REPO="simple-spring-app"
                         
         //                 // sh 'bash ./aws-ecs-deploy.sh'
 
         //                 sh """
-        //                     docker tag ${customLocalImage} ${env.ECS_REGISTRY}/${ECR_REPO}:build-${BUILD_NUMBER}
-        //                     docker tag ${customLocalImage} ${env.ECS_REGISTRY}/${ECR_REPO}:latest
-        //                     echo "${env.ECS_REGISTRY}/${ECR_REPO}"
-        //                     docker push ${env.ECS_REGISTRY}/${ECR_REPO}
+        //                     docker tag ${customLocalImage} ${ECS_REGISTRY}/${ECR_REPO}:build-${BUILD_NUMBER}
+        //                     docker tag ${customLocalImage} ${ECS_REGISTRY}/${ECR_REPO}:latest
+        //                     echo "${ECS_REGISTRY}/${ECR_REPO}"
+        //                     docker push ${ECS_REGISTRY}/${ECR_REPO}
         //                 """
         //                 // sh "docker stop lamp-web || true"
         //                 // sh "docker rm lamp-web || true"
