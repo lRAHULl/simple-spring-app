@@ -63,7 +63,7 @@ pipeline {
                             docker tag ${customLocalImage} ${ECS_REGISTRY}/${ECR_REPO}:latest
                             echo "${ECS_REGISTRY}/${ECR_REPO}"
                             docker push ${ECS_REGISTRY}/${ECR_REPO}
-                        """
+                        """ 
 
                         sendSlackMessage "Publish Successul"
                     } else if (gitBranch == 'master') {
