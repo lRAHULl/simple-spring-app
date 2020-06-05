@@ -49,7 +49,6 @@ pipeline {
                         // sh "docker tag ${customLocalImage} ${dockerPublisherName}/${dockerRepoName}:latest"
                         // sh "docker push ${dockerPublisherName}/${dockerRepoName}"
 
-                        ECS_REGISTRY="572508813856.dkr.ecr.us-east-1.amazonaws.com"
                         ECR_REPO="simple-spring-app"
 
                         sh """
@@ -75,13 +74,6 @@ pipeline {
                         sh "docker stop java-spring-app || true"
                         sh "docker rm java-spring-app || true"
                         sh "docker run -d -p 8080:8080 --name java-spring-app ${customLocalImage}"
-
-                        // sh "docker stop lamp-web || true"
-                        // sh "docker rm lamp-web || true"
-                        // sh "docker stop lamp-mysql || true"
-                        // sh "docker rm lamp-mysql || true"
-                        
-                        // sh "docker-compose up -d"
                     } else if (gitBranch.contains('feature')) {
                         echo "It is a feature branch"
                     }
