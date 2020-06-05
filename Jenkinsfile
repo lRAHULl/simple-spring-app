@@ -2,7 +2,7 @@
 def dockerPublisherName = "rahulraju"
 def dockerRepoName = "simple-spring-app"
 
-def gitRepoName = "git@github.com:lRAHULl/simple-spring-app.git"
+def gitRepoName = "https://github.com/lRAHULl/simple-spring-app.git"
 def customLocalImage = "sample-spring-app-image"
 
 def gitBranch
@@ -49,9 +49,10 @@ pipeline {
                         // sh "docker tag ${customLocalImage} ${dockerPublisherName}/${dockerRepoName}:latest"
                         // sh "docker push ${dockerPublisherName}/${dockerRepoName}"
                         def buildTag = "build-${BUILD_NUMBER}"
+                        def gitUrl = "https://${env.GITHUB_USERNAME}:${env.GITHUB_PASSWORD}@github.com/lRAHULl/simple-spring-app.git"
 
                         sh "git tag ${buildTag}"
-                        sh "git push ${GIT_URL} ${buildTag}"
+                        sh "git push ${gitUrl} ${buildTag}"
 
                         // sh 'printenv'
                         def ECS_REGISTRY = env.ECS_REGISTRY
