@@ -19,7 +19,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: "**", url: "${gitRepoName}"
-                sh 'printenv'
+                echo "${GIT_BRANCH}"
                 script {
                     gitBranch=getBranchName "${GIT_BRANCH}"
                 }
@@ -54,7 +54,6 @@ pipeline {
                         sh "git tag ${buildTag}"
                         sh "git push ${gitUrl} ${buildTag}"
 
-                        
                         def ECS_REGISTRY = env.ECS_REGISTRY
                         def ECR_REPO = env.SIMPLE_JAVA_ECR_REPO
 
@@ -84,6 +83,7 @@ pipeline {
 
 void deployToECS() {
     sh '''
+
         dockerRepo=`aws ecr describe-repositories --repository-name jenkins-test-repo --region us-east-1 | grep repositoryUri | cut -d "\"" -f 4`
         sed -e "s;DOCKER_IMAGE_NAME;${dockerRepo}:latest;g" ${WORKSPACE}/template.json > taskDefinition.json
         aws ecs register-task-definition --family jenkins-test --cli-input-json file://taskDefinition.json --region us-east-1
