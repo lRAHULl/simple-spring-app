@@ -50,8 +50,8 @@ pipeline {
                         // sh "docker push ${dockerPublisherName}/${dockerRepoName}"
                         def buildTag = "build-${BUILD_NUMBER}"
 
-                        sh "git tag origin ${buildTag}"
-                        sh "git push "
+                        sh "git tag ${buildTag}"
+                        sh "git push origin ${buildTag}"
 
                         // sh 'printenv'
                         def ECS_REGISTRY = env.ECS_REGISTRY
@@ -92,11 +92,7 @@ pipeline {
 
         //         script {
         //             if (gitBranch == 'master'){
-        //                 echo "Master "
-
-        //                 ECS_REGISTRY="572508813856.dkr.ecr.us-east-1.amazonaws.com"
-        //                 ECR_REPO="simple-spring-app"
-                        
+        //                 echo "Master "                        
         //                 // sh 'bash ./aws-ecs-deploy.sh'
 
         //                 sh """
