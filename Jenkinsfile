@@ -57,7 +57,7 @@ pipeline {
                         def ECS_REGISTRY = env.ECS_REGISTRY
                         def ECR_REPO = env.SIMPLE_JAVA_ECR_REPO
                            
-                        sh "$(aws ecr get-login --registry-ids ${env.AWS_ID} --no-include-email)"
+                        sh "`aws ecr get-login --registry-ids ${env.AWS_ID} --no-include-email)`"
                         sh """
                             docker tag ${customLocalImage} ${ECS_REGISTRY}/${ECR_REPO}:${buildTag}
                             docker tag ${customLocalImage} ${ECS_REGISTRY}/${ECR_REPO}:latest
